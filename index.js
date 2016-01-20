@@ -1,0 +1,1 @@
+module.exports = require('./libs/id_generator');

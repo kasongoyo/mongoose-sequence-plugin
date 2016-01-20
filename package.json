@@ -1,0 +1,37 @@
+{
+  "name": "id-generator-plugin",
+  "version": "0.0.1",
+  "description": "Mongoose plugin to autoincrement alphanumeric field",
+  "main": "index.js",
+  "scripts": {
+    "test": "grunt"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kasongoyo/id-generator.git"
+  },
+  "keywords": [
+    "Mongoose",
+    "autoincrement",
+    "id-generator"
+  ],
+  "author": "Isaac Kasongoyo <kasongoyo@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kasongoyo/id-generator/issues"
+  },
+  "homepage": "https://github.com/kasongoyo/id-generator#readme",
+  "devDependencies": {
+    "chai": "^3.4.1",
+    "grunt": "^0.4.5",
+    "grunt-express-server": "^0.5.1",
+    "grunt-mocha-test": "^0.12.7",
+    "load-grunt-tasks": "^3.4.0",
+    "mocha": "^2.3.4"
+  },
+  "dependencies": {
+    "async": "^1.5.2",
+    "kerberos": "0.0.18",
+    "mongoose": "^4.3.6"
+  }
+}
