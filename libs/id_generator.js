@@ -49,11 +49,6 @@ var idAutoGenerator = function(schema, options) {
         }
     };
 
-    //add generator name, same as the one in generator model
-    // schema.add({
-    //     generatorName: String
-    // });
-
     var generator = {};
 
     if (options) {
@@ -77,9 +72,12 @@ var idAutoGenerator = function(schema, options) {
         }
     }
 
-    // schema.path('generatorName').default(generator.name);
-
-    IdGenerator.create(generator, function(error) {
+    IdGenerator.findOneAndUpdate({
+        name: generator.name
+    }, generator, {
+        new: true,
+        upsert: true
+    }, function(error) {
         if (error) {
             throw new Error('id model fail to initialize ' + error);
         }
