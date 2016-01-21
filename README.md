@@ -15,7 +15,52 @@ it constant.
 
 ## Prerequisite
 To have this plugin work on your application, you have to create model **(IdGeneratorModel)** that will keep
-track of the highest id and act as lookup table for all field used by plugin. Name that model anyname you like but make sure you register it into mongoose before you register any other model that utilize this plugin.
+track of the highest id and act as lookup table for all field used by plugin. Name that model anything you like but make sure you register it into mongoose before you register any other model that utilize this plugin. IdGenerator model  must be of the following format.
+```
+var IdGeneratorSchema = new Schema({
+
+    /**
+     * @name name
+     * @description name 
+     * @type {Object}
+     * @private
+     */
+    name: {
+
+        type: String,
+        index: {
+            unique: true
+        }
+
+    },
+
+    /**
+     * @name value
+     * @description value 
+     * @type {Object}
+     * @private
+     */
+    value: {
+
+        type: String
+
+    },
+
+    /**
+     * @name version
+     * @description version 
+     * @type {Object}
+     * @private
+     */
+    version: {
+
+        type: Number
+
+    }
+
+});
+
+```
 
 ## Installation
 
