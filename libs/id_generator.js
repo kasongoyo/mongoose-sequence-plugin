@@ -1,15 +1,14 @@
 'use strict';
 
 //dependencies
-var mongoose = require('mongoose');
-require('./id_generator_model.js')
-var IdGenerator = mongoose.model('IdGenerator');
+var GeneratorUtil = require('./generator_util');
 var async = require('async');
 
 /**
  * @description id_generator
  */
 var idAutoGenerator = function(schema, options) {
+    var IdGenerator;
     /**
      * This method create array of objects in series;
      * It force creation of object to be in series
@@ -51,13 +50,18 @@ var idAutoGenerator = function(schema, options) {
     };
 
     //add generator name, same as the one in generator model
-    schema.add({
-        generatorName: String
-    });
+    // schema.add({
+    //     generatorName: String
+    // });
 
     var generator = {};
 
     if (options) {
+        if (!(options.generatorModel === null)) {
+            IdGenerator = options.generatorModel;
+        } else {
+            throw new Error('Generator model(model to track generator id) must be specified');
+        }
         if (!options.field) {
             throw new Error('field to increment must be specified');
         }
@@ -73,11 +77,11 @@ var idAutoGenerator = function(schema, options) {
         }
     }
 
-    schema.path('generatorName').default(generator.name);
+    // schema.path('generatorName').default(generator.name);
 
     IdGenerator.create(generator, function(error) {
         if (error) {
-            throw new Error('id model fail to initialize '+error);
+            throw new Error('id model fail to initialize ' + error);
         }
     });
 
@@ -86,14 +90,14 @@ var idAutoGenerator = function(schema, options) {
         if (this.isNew) {
             var schemaInstance = this;
             IdGenerator.findOne({
-                    name: schemaInstance.generatorName
+                    name: options.idName
                 },
                 function(err, genDoc) {
                     if (err) {
                         next(new Error(err));
                     }
                     schemaInstance[options.field] = genDoc.value;
-                    genDoc.incId();
+                    genDoc.value = GeneratorUtil.incId(genDoc.value);
                     genDoc.save(function(err) {
                         if (err) {
                             next(new Error(err));
