@@ -27,7 +27,8 @@
     "grunt-express-server": "^0.5.1",
     "grunt-mocha-test": "^0.12.7",
     "load-grunt-tasks": "^3.4.0",
-    "mocha": "^2.3.4"
+    "mocha": "^2.3.4",
+    "mongoose": "^4.3.6"
   },
   "dependencies": {
     "async": "^1.5.2"

@@ -9,7 +9,7 @@
 //dependencies
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
-var Util = require('./generator_util');
+var Util = require('../../libs/generator_util');
 
 
 //IdGenerator Schema
