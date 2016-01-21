@@ -31,7 +31,6 @@
   },
   "dependencies": {
     "async": "^1.5.2",
-    "kerberos": "0.0.18",
-    "mongoose": "^4.3.6"
+    "kerberos": "0.0.18"
   }
 }
