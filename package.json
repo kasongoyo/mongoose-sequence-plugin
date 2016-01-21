@@ -30,8 +30,6 @@
     "mocha": "^2.3.4"
   },
   "dependencies": {
-    "async": "^1.5.2",
-    "kerberos": "0.0.18",
-    "mongoose": "^4.3.6"
+    "async": "^1.5.2"
   }
 }
