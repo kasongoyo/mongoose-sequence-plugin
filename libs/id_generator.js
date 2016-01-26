@@ -72,9 +72,6 @@ var idAutoGenerator = function(schema, options) {
     });
 
 
-    console.log('The path is ' + JSON.stringify(schema.path(options.field)));
-
-
 
     schema.methods.gsave = function(retryTimes, callback) {
         if (typeof arguments[0] === 'function') {
