@@ -31,6 +31,7 @@
     "mongoose": "^4.3.6"
   },
   "dependencies": {
-    "async": "^1.5.2"
+    "async": "^1.5.2",
+    "lodash": "^4.0.1"
   }
 }

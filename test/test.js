@@ -24,23 +24,17 @@ describe('test the id generator', function() {
 
     it('should auto increment id on model creation', function(done) {
 
-        Sample.createSeries(samples, function(err, samples) {
-            console.log('reached here');
+        Sample.gcreate(samples.slice(0, 3), function(err, samples) {
             expect(err).to.not.exist;
-            expect(samples[0].code).to.equal('99-ZX');
-            expect(samples[1].code).to.equal('99-ZY');
-            expect(samples[2].code).to.equal('99-ZZ');
+            expect(samples.length).to.equal(3);
             done();
         });
     })
 
     it('id should remain constant when it get to the greatest number possible', function(done) {
-        Sample.createSeries(samples, function(err, samples) {
+        Sample.gcreate(samples, function(err, samples) {
             console.log('reached here');
-            expect(err).to.not.exist;
-            expect(samples[0].code).to.equal('99-ZZ');
-            expect(samples[1].code).to.equal('99-ZZ');
-            expect(samples[2].code).to.equal('99-ZZ');
+            expect(err).to.exist;
             done();
         });
     });

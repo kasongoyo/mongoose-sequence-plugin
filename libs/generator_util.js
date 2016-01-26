@@ -41,14 +41,42 @@ function resetChar(charToReset) {
      * @param  {[type]}  id id number to check
      * @return {Boolean}    true if it's last id, false otherwise
      */
-function isLastId(id) {
+function isLastId(id, prefix, suffix) {
+    id = deaffixId(id, prefix, suffix);
     return id.match(/[0-8a-yA-Y]+/) === null;
 }
 
+function affixId(idValue, prefix, suffix) {
+    var affixedValue = idValue;
+    if (prefix) {
+        affixedValue = prefix + affixedValue;
+    }
+    if (suffix) {
+        affixedValue = affixedValue + suffix;
+    }
+    return affixedValue;
+}
+
+function deaffixId(affixedValue, prefix, suffix) {
+    var idValue = affixedValue;
+    if (prefix) {
+        prefix = new RegExp('^' + prefix);
+        idValue = idValue.replace(prefix, '');
+    }
+    if (suffix) {
+        suffix = new RegExp(suffix + '$');
+        idValue = idValue.replace(suffix, '');
+    }
+    return idValue;
+}
+
 var util = {
-    incId: function(previousIdNum) {
-        if (isLastId(previousIdNum)) {
-            return previousIdNum;
+    incId: function(previousIdNum, prefix, suffix) {
+        previousIdNum = deaffixId(previousIdNum, prefix, suffix);
+        var incVal;
+        if (isLastId(previousIdNum, prefix, suffix)) {
+            incVal = affixId(previousIdNum, prefix, suffix);
+            return incVal;
         }
         var seqChars = previousIdNum.split('');
         for (var i = seqChars.length - 1; i >= 0; i--) {
@@ -56,15 +84,21 @@ var util = {
             if (seqChar.match(/^[0-9a-zA-Z]+$/)) {
                 var incrementedChar = incrementChar(seqChar);
                 if (incrementedChar) {
-                    return replaceCharAt(previousIdNum, i, incrementedChar);
+                    incVal = affixId(replaceCharAt(previousIdNum, i, incrementedChar), prefix, suffix);
+                    return incVal;
                 } else {
                     previousIdNum = replaceCharAt(previousIdNum, i,
                         resetChar(seqChar));
                 }
             }
         }
-        return previousIdNum;
-    }
+        incVal = affixId(previousIdNum, prefix, suffix);
+        return incVal;
+    },
+
+    isLastId: isLastId,
+
+    affixId: affixId
 };
 
 module.exports = util;

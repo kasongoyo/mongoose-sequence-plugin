@@ -5,62 +5,11 @@ then it will increment the field value to the final number and leave
 it constant.
 
 ## Guide
-- [Prerequisite](#prerequisite)
 - [Install](#installation)
 - [Usage](#usage)
 - [Example](#example)
 
 
-
-
-## Prerequisite
-To have this plugin work on your application, you have to create model **(IdGeneratorModel)** that will keep
-track of the highest id and act as lookup table for all field used by plugin. Name that model anything you like but make sure you register it into mongoose before you register any other model that utilize this plugin. IdGenerator model  must be of the following format.
-```
-var IdGeneratorSchema = new Schema({
-
-    /**
-     * @name name
-     * @description name 
-     * @type {Object}
-     * @private
-     */
-    name: {
-
-        type: String,
-        index: {
-            unique: true
-        }
-
-    },
-
-    /**
-     * @name value
-     * @description value 
-     * @type {Object}
-     * @private
-     */
-    value: {
-
-        type: String
-
-    },
-
-    /**
-     * @name version
-     * @description version 
-     * @type {Object}
-     * @private
-     */
-    version: {
-
-        type: Number
-
-    }
-
-});
-
-```
 
 ## Installation
 
@@ -75,13 +24,19 @@ Require the id-generator-plugin into schema file and plugin it.
 var IdAutoGenerator = require('id-generator-plugin');
 Schema.plugin(IdAutoGenerator, options);
 ```
-The plugin accept second parameter which is the options object. Options must be specified for the plugin to work, options include the followings properties;    
+
+### Configuration
+The plugin accept configuration as second parameter of the `Schema.plugin` called options. Options object must be specified for the plugin to work, options include the followings properties;    
 - options.field  
-This refer to schema field that you want to be incremented. It complusory options.      
-- options.idName  
-This must be unique with respect to the application. It is the name that will uniquely identify the field and its value at any given time in generator schema. It complusory options.        
+This is mandatory options, it specify the field name that will be used as id.      
 - options.startAt   
 This serve two things. It speficy the initial id as well as the format of the value to be incremented.    
+
+-options.prefix(Optional)  
+Specify this to prefix your field to increment.  
+
+- options.suffix(Optional)
+Specify this to suffix your field to increment. 
 
 ## Example
 
@@ -92,19 +47,13 @@ var IdAutoGenerator = require('id-generator-plugin');
 var SampleSchema = new Schema({
     name: {
         type: String
-    },
-    //field to auto-increment
-    code: {
-        type: String
     }
 });
 
 //activate id generator plugin
 SampleSchema.plugin(idAutoGenerator, {
     field: 'code',
-    idName: 'SAMPLE_CODE',
     startAt: '99-ZX',
-    generatorModel: GeneratorModel
 });
 ```
 
