@@ -11,9 +11,9 @@ var SampleSchema = new Schema({
         type: String
     },
     //field to auto-increment
-    code: {
-        type: String
-    }
+    // code: {
+    //     type: String
+    // }
 });
 
 //activate id generator plugin

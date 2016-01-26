@@ -65,15 +65,15 @@ var idAutoGenerator = function(schema, options) {
         }
     }
 
-
     //add field to hold id 
-    var field = {};
-    field[options.field] = {
-        type: String,
-        unique: true
-    }
+    schema.path(options.field, {
+        unique: true,
+        type: String
+    });
 
-    schema.add(field);
+
+    console.log('The path is ' + JSON.stringify(schema.path(options.field)));
+
 
 
     schema.methods.gsave = function(retryTimes, callback) {
