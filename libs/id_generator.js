@@ -4,123 +4,121 @@
 var GeneratorUtil = require('./generator_util');
 var async = require('async');
 var _ = require('lodash');
+var mongoose = require('mongoose');
+var Model = mongoose.Model;
+
+//remember actual Model.prototype.save
+var previousSave = Model.prototype.save;
 
 /**
- * @description id_generator
+ * @name idGenerator
+ * @description
+ * @type {Function}
  */
 var idAutoGenerator = function(schema, options) {
-    // var IdGenerator;
-    /**
-     * This method create array of objects in series;
-     * It force creation of object to be in series
-     * @param  {[type]}   doc    
-     */
-    schema.statics.gcreate = function(doc, callback) {
-        var thisModel = this;
 
-        if (Array.isArray(doc)) {
-            var args = doc;
-            var toExecute = [];
-            args.forEach(function(doc) {
-                var instance = new thisModel(doc);
-                toExecute.push(function(cb) {
-                    instance.gsave(function(error, doc) {
-                        if (error) {
-                            cb(error);
-                        } else {
-                            cb(null, doc);
-                        }
-                    });
-                });
-            });
-            async.parallel(toExecute, function(err, docs) {
-                if (err) {
-                    callback(err);
-                } else {
-                    callback(null, docs);
-                }
-            });
-        } else {
-            var instance = new thisModel(doc);
-            instance.gsave(function(error, doc) {
-                if (error) {
-                    callback(error);
-                } else {
-                    callback(null, doc);
-                }
-            });
-        }
-    };
+    //extend default options
+    options = _.merge({
+        maxSaveRetries: 1000,
+        startAt: '0000-0000-0000-0001',
+        field: 'sequence'
+    }, options || {});
 
-    var generator = {};
-
-    if (options) {
-        if (!options.field) {
-            throw new Error('field to increment must be specified');
-        }
-        if (options.startAt) {
-            generator.value = options.startAt;
-        } else {
-            throw new Error('start id must be provided');
-        }
+    //defende max retries to obey optimistic nature
+    if (options.maxSaveRetries > 1000) {
+        options.maxSaveRetries = 1000;
     }
 
-    //add field to hold id 
-    schema.path(options.field, {
-        unique: true,
-        type: String
-    });
+    //corrent path definitions
+    var pathOpt = _.merge({},
+        _.get(schema.path(options.field), 'options', {}), {
+            unique: true,
+            type: String
+        });
+
+    schema.path(options.field, pathOpt);
 
 
+    /**
+     * @name save
+     * @description override schema save to accommodate sequence value generation
+     *              optimistically
+     * @param {Object} [option] valid mongoose model save options
+     * @param {Function} [fn] callback to invoke on success or error
+     * @type {Function}
+     */
+    schema.methods.save = function($options, callback) {
 
-    schema.methods.gsave = function(retryTimes, callback) {
-        if (typeof arguments[0] === 'function') {
-            retryTimes = 1;
-            callback = arguments[0];
-        } else {
-            callback = arguments[1];
+        //normalize arguments
+        if ($options && _.isFunction($options)) {
+            callback = $options;
+            $options = {};
         }
-        var instance = this;
+
+        //normalize options
+        $options = _.merge({
+            retryTimes: 1
+        }, $options || {});
+
+        //save a current instance
         async.waterfall([
+
             function findLastInsertedDoc(next) {
-                instance.constructor.find().hint({
+                this.constructor.find().hint({
                     $natural: -1
-                }).limit(1).exec(function(err, doc) {
-                    next(err, doc);
+                }).limit(1).exec(function(error, doc) {
+                    next(error, doc);
                 });
-            },
+            }.bind(this),
+
             function setId(doc, next) {
+
                 if (_.isEmpty(doc)) {
-                    instance[options.field] = GeneratorUtil
-                        .affixId(options.startAt, options.prefix, options.suffix);
+                    this[options.field] =
+                        GeneratorUtil.affixId(
+                            options.startAt, options.prefix, options.suffix);
                 } else {
-                    instance[options.field] = GeneratorUtil
-                        .incId(doc[0][options.field], options.prefix, options.suffix);
+                    this[options.field] =
+                        GeneratorUtil.incId(
+                            doc[0][options.field], options.prefix, options.suffix);
                 };
-                instance.save(function(error, savedDoc) {
+
+                previousSave.call(this, function(error, savedDoc) {
                     next(error, savedDoc)
-                })
-            }
+                });
+
+            }.bind(this)
+
         ], function(error, doc) {
+            //success save
             if (!doc) {
-                if (GeneratorUtil.isLastId(instance[options.field], options.prefix, options.suffix)) {
+
+                //TODO add comment what are they doing
+                if (GeneratorUtil.isLastId(this[options.field], options.prefix, options.suffix)) {
                     error.customMessage = 'The maximum ID has been reached,' +
                         'id generator can no longer work' +
                         'unless the id format is updated';
-                    console.log(error.customMessage)
-                    callback(error, doc);
-                    return;
+                    return callback(error, doc);
                 }
-                console.log("retry times " + retryTimes);
-                if (retryTimes == 1000) {
-                    callback(error, doc);
-                    return;
+
+                //TODO fix to use maxRetries
+                if ($options.retryTimes > options.maxSaveRetries) {
+                    return callback(error, doc);
                 }
-                instance.gsave(++retryTimes, callback);
-            } else {
-                callback(error, doc);
+
+                //increment save retries times
+                ++$options.retryTimes;
+
+                return this.save.call(this, $options, callback);
             }
-        })
+
+            //fail to save complete
+            else {
+                return callback(error, doc);
+            }
+
+        }.bind(this));
+
     };
 };
 
