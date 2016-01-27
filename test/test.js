@@ -1,14 +1,14 @@
 //dependencies
 var mongoose = require('mongoose');
 //load all modules
-require('../mongoose.js');
+require('./mongoose.js');
 var Sample = mongoose.model('Sample');
 var expect = require('chai').expect;
 var async = require('async');
 var samples;
 
 
-describe('test the id generator', function() {
+describe('sequence value generator', function() {
 
     before(function() {
         samples = [{
@@ -22,22 +22,60 @@ describe('test the id generator', function() {
         }];
     });
 
-    it('should auto increment id on model creation', function(done) {
 
-        Sample.gcreate(samples.slice(0, 3), function(err, samples) {
-            expect(err).to.not.exist;
-            expect(samples.length).to.equal(3);
-            done();
-        });
-    })
-
-    it('id should remain constant when it get to the greatest number possible', function(done) {
-        Sample.gcreate(samples, function(err, samples) {
-            console.log('reached here');
-            expect(err).to.exist;
-            done();
-        });
+    it.skip('should be able to merge schema field definition with plugin specific field options', function(done) {
+        done();
     });
+
+    it.skip('should be able to exit with error if maximum save retries reached', function(done) {
+        done();
+    });
+
+
+    it('should be able generate sequence value on save model instance', function(done) {
+        var sample = new Sample({
+            name: 'sample1'
+        });
+
+        sample.save(function(error, _sample) {
+
+            expect(_sample).to.exist;
+            expect(error).to.not.exist;
+            expect(_sample.code).to.exist;
+            expect(_sample.name).to.be.equal('sample1');
+
+            done(error, _sample);
+        });
+
+    });
+
+    it('should be able generate sequence value on model(s) creation', function(done) {
+
+        Sample.create(samples.slice(0, 3), function(error, _samples) {
+            expect(error).to.not.exist;
+            expect(_samples.length).to.equal(3);
+            done(error, _samples);
+        });
+
+    });
+
+
+    it('should throw `error` when sequence field value reach greatest value possible', function(done) {
+
+        Sample.create(samples, function(error, _samples) {
+
+            expect(error).to.exist;
+
+            done(null, _samples);
+        });
+
+    });
+
+
+    afterEach(function(done) {
+        Sample.remove(done);
+    });
+
 
     after(function(done) {
         var cleanups = mongoose.modelNames()
@@ -63,4 +101,5 @@ describe('test the id generator', function() {
             }
         });
     });
+
 });

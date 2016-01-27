@@ -4,6 +4,8 @@ It only need to be told about the field and value to start with
 then it will increment the field value to the final number and leave        
 it constant.
 
+Unique formatted sequence value generator for mongoose schema field. 
+
 ## Guide
 - [Install](#installation)
 - [Usage](#usage)
