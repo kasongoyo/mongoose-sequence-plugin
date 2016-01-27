@@ -1,3 +1,4 @@
+'use strict';
 //dependencies
 var mongoose = require('mongoose');
 //load all modules
@@ -12,7 +13,7 @@ describe('test the id generator', function() {
 
     before(function() {
         samples = [{
-            name: 'sample1'
+            name: 'Sample1'
         }, {
             name: 'Sample2'
         }, {
@@ -29,11 +30,10 @@ describe('test the id generator', function() {
             expect(samples.length).to.equal(3);
             done();
         });
-    })
+    });
 
     it('id should remain constant when it get to the greatest number possible', function(done) {
         Sample.gcreate(samples, function(err, samples) {
-            console.log('reached here');
             expect(err).to.exist;
             done();
         });

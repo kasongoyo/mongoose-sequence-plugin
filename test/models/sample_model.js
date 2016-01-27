@@ -8,7 +8,8 @@ var idAutoGenerator = require('../../index');
 //sample schema
 var SampleSchema = new Schema({
     name: {
-        type: String
+        type: String,
+        unique:true
     },
     //field to auto-increment
     // code: {

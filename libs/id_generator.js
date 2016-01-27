@@ -5,6 +5,7 @@ var GeneratorUtil = require('./generator_util');
 var async = require('async');
 var _ = require('lodash');
 
+
 /**
  * @description id_generator
  */
@@ -96,10 +97,10 @@ var idAutoGenerator = function(schema, options) {
                 } else {
                     instance[options.field] = GeneratorUtil
                         .incId(doc[0][options.field], options.prefix, options.suffix);
-                };
+                }
                 instance.save(function(error, savedDoc) {
-                    next(error, savedDoc)
-                })
+                    next(error, savedDoc);
+                });
             }
         ], function(error, doc) {
             if (!doc) {
@@ -107,11 +108,10 @@ var idAutoGenerator = function(schema, options) {
                     error.customMessage = 'The maximum ID has been reached,' +
                         'id generator can no longer work' +
                         'unless the id format is updated';
-                    console.log(error.customMessage)
+                    console.log(error.customMessage);
                     callback(error, doc);
                     return;
                 }
-                console.log("retry times " + retryTimes);
                 if (retryTimes == 1000) {
                     callback(error, doc);
                     return;
@@ -120,7 +120,7 @@ var idAutoGenerator = function(schema, options) {
             } else {
                 callback(error, doc);
             }
-        })
+        });
     };
 };
 

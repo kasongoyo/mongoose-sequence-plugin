@@ -25,6 +25,10 @@ var IdAutoGenerator = require('id-generator-plugin');
 Schema.plugin(IdAutoGenerator, options);
 ```
 
+On using this plugin make sure you use `Model#gsave` and `Model.gcreate` to persist your data.   
+
+`Model#gsave` and `Model.gcreate` have been optimized to work with this plugin. Using normal mongoose API method to persist data will cause not id to be generated and produce unspecified outcome. 
+
 ### Configuration
 The plugin accept configuration as second parameter of the `Schema.plugin` called options. Options object must be specified for the plugin to work, options include the followings properties;    
 - options.field  

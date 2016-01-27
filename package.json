@@ -24,8 +24,10 @@
   "devDependencies": {
     "chai": "^3.4.1",
     "grunt": "^0.4.5",
+    "grunt-contrib-jshint": "^0.12.0",
     "grunt-express-server": "^0.5.1",
     "grunt-mocha-test": "^0.12.7",
+    "jshint-stylish": "^2.1.0",
     "load-grunt-tasks": "^3.4.0",
     "mocha": "^2.3.4",
     "mongoose": "^4.3.6"
