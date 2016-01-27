@@ -1,8 +1,10 @@
-## Id Generator Plugin
+# Mongoose Sequence Plugin
+#### Auto increment any alphanumeric mongoose schema field
 Mongoose plugin to auto-increment any alphanumeric schema field     
 It only need to be told about the field and value to start with       
-then it will increment the field value to the final number and leave        
-it constant.
+then it will increment the field value up to it's highest value.   
+
+Unique formatted sequence value generator for mongoose schema field. 
 
 ## Guide
 - [Install](#installation)
@@ -14,38 +16,40 @@ it constant.
 ## Installation
 
 ```sh
-$ npm install --save id-generator-plugin
+$ npm install --save mongoose-sequence-plugin
 ```
 
 ## Usage
 Require the id-generator-plugin into schema file and plugin it.   
 
 ```
-var IdAutoGenerator = require('id-generator-plugin');
-Schema.plugin(IdAutoGenerator, options);
+var sequenceGenerator = require('mongoose-sequence-plugin');
+Schema.plugin(sequenceGenerator, options);
 ```
 
-On using this plugin make sure you use `Model#gsave` and `Model.gcreate` to persist your data.   
-
-`Model#gsave` and `Model.gcreate` have been optimized to work with this plugin. Using normal mongoose API method to persist data will cause not id to be generated and produce unspecified outcome. 
 
 ### Configuration
-The plugin accept configuration as second parameter of the `Schema.plugin` called options. Options object must be specified for the plugin to work, options include the followings properties;    
-- options.field  
-This is mandatory options, it specify the field name that will be used as id.      
-- options.startAt   
+The plugin accept configuration as second parameter of the `Schema.plugin` called options. Options include the followings properties;    
+
+- options.field(Optional)  
+This options specify the field name that need to be autoincremented. Field can be predefined in the schema or not. Default is 'sequence'      
+
+- options.startAt(Optional)   
 This serve two things. It speficy the initial id as well as the format of the value to be incremented.    
 
 -options.prefix(Optional)  
 Specify this to prefix your field to increment.  
 
 - options.suffix(Optional)
-Specify this to suffix your field to increment. 
+Specify this to suffix your field to increment.
+
+- options.maxSaveRetries    
+Internal this plugin save the instance optimistically with default retry count of 1000, by defined this option then you're overriding default retry counter.    
 
 ## Example
 
 ```
-var IdAutoGenerator = require('id-generator-plugin');
+var sequenceGenerator = require('mongoose-sequence-plugin');
 
 //sample schema
 var SampleSchema = new Schema({
@@ -55,11 +59,18 @@ var SampleSchema = new Schema({
 });
 
 //activate id generator plugin
-SampleSchema.plugin(idAutoGenerator, {
+SampleSchema.plugin(sequenceGenerator, {
     field: 'code',
     startAt: '99-ZX',
+    prefix: 'MNH-',
+    maxSaveRetries: 2
 });
 ```
 
-
+## Sample output;
+```
+99-ZX,
+99-ZY,
+99-ZZ
+```
 

@@ -1,6 +1,6 @@
 {
-  "name": "id-generator-plugin",
-  "version": "1.0.3",
+  "name": "mongoose-sequence-plugin",
+  "version": "1.0.4",
   "description": "Mongoose plugin to autoincrement alphanumeric field",
   "main": "index.js",
   "scripts": {
@@ -8,19 +8,19 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kasongoyo/id-generator.git"
+    "url": "git+https://github.com/kasongoyo/mongoose-sequence-plugin.git"
   },
   "keywords": [
     "Mongoose",
-    "autoincrement",
-    "id-generator"
+    "Autoincrement",
+    "Sequence generator"
   ],
   "author": "Isaac Kasongoyo <kasongoyo@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/kasongoyo/id-generator/issues"
+    "url": "https://github.com/kasongoyo/mongoose-sequence-plugin/issues"
   },
-  "homepage": "https://github.com/kasongoyo/id-generator#readme",
+  "homepage": "https://github.com/kasongoyo/mongoose-sequence-plugin#readme",
   "devDependencies": {
     "chai": "^3.4.1",
     "grunt": "^0.4.5",
