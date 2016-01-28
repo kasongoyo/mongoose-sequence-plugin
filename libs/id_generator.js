@@ -60,64 +60,73 @@ var idAutoGenerator = function(schema, options) {
             retryTimes: 1
         }, $options || {});
 
-        //save a current instance
-        async.waterfall([
 
-            function findLastInsertedDoc(next) {
-                this.constructor.find().hint({
-                    $natural: -1
-                }).limit(1).exec(function(error, doc) {
-                    next(error, doc);
-                });
-            }.bind(this),
+        if (this.isNew) {
 
-            function setId(doc, next) {
+            //save a current instance
+            async.waterfall([
 
-                if (_.isEmpty(doc)) {
-                    this[options.field] =
-                        GeneratorUtil.affixId(
-                            options.startAt, options.prefix, options.suffix);
-                } else {
-                    this[options.field] =
-                        GeneratorUtil.incId(
-                            doc[0][options.field], options.prefix, options.suffix);
-                };
+                function findLastInsertedDoc(next) {
+                    this.constructor.find().hint({
+                        $natural: -1
+                    }).limit(1).exec(function(error, doc) {
+                        next(error, doc);
+                    });
+                }.bind(this),
 
-                previousSave.call(this, function(error, savedDoc) {
-                    next(error, savedDoc)
-                });
+                function setId(doc, next) {
 
-            }.bind(this)
+                    if (_.isEmpty(doc)) {
+                        this[options.field] =
+                            GeneratorUtil.affixId(
+                                options.startAt, options.prefix, options.suffix);
+                    } else {
+                        this[options.field] =
+                            GeneratorUtil.incId(
+                                doc[0][options.field], options.prefix, options.suffix);
+                    };
 
-        ], function(error, doc) {
-            //success save
-            if (!doc) {
+                    previousSave.call(this, function(error, savedDoc) {
+                        next(error, savedDoc)
+                    });
 
-                //TODO add comment what are they doing
-                if (GeneratorUtil.isLastId(this[options.field], options.prefix, options.suffix)) {
-                    error.customMessage = 'The maximum ID has been reached,' +
-                        'id generator can no longer work' +
-                        'unless the id format is updated';
+                }.bind(this)
+
+            ], function(error, doc) {
+                //success save
+                if (!doc) {
+
+                    //TODO add comment what are they doing
+                    if (GeneratorUtil.isLastId(this[options.field], options.prefix, options.suffix)) {
+                        error.customMessage = 'The maximum ID has been reached,' +
+                            'id generator can no longer work' +
+                            'unless the id format is updated';
+                        return callback(error, doc);
+                    }
+
+                    //TODO fix to use maxRetries
+                    if ($options.retryTimes > options.maxSaveRetries) {
+                        return callback(error, doc);
+                    }
+
+                    //increment save retries times
+                    ++$options.retryTimes;
+
+                    return this.save.call(this, $options, callback);
+                }
+
+                //fail to save complete
+                else {
                     return callback(error, doc);
                 }
 
-                //TODO fix to use maxRetries
-                if ($options.retryTimes > options.maxSaveRetries) {
-                    return callback(error, doc);
-                }
+            }.bind(this));
+        }
 
-                //increment save retries times
-                ++$options.retryTimes;
-
-                return this.save.call(this, $options, callback);
-            }
-
-            //fail to save complete
-            else {
-                return callback(error, doc);
-            }
-
-        }.bind(this));
+        //continue with normal save
+        else {
+            return previousSave.call(this, $options, callback);
+        }
 
     };
 };
