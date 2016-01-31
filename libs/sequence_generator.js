@@ -51,6 +51,11 @@ var sequenceGenerator = function(schema, options) {
      */
     schema.methods.save = function($options, callback) {
 
+        //check if its update then dont generate next value in the sequence
+        if (!this.isNew) {
+            return previousSave.call(this, callback);
+        }
+
         //normalize arguments
         if ($options && _.isFunction($options)) {
             callback = $options;

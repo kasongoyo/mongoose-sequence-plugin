@@ -46,6 +46,26 @@ describe('sequence value generator', function() {
 
     });
 
+    it('should be able not to generate next sequence value on doc update', function(done) {
+        var sample = new Sample({
+            name: 'sampleTest'
+        });
+
+        sample.save(function(error, _sample) {
+
+            Sample.findByIdAndUpdate(
+                _sample._id, {
+                    name: 'sampleTest2'
+                }, {
+                    new: true
+                },
+                function(error, doc) {
+                    expect(doc.code).to.equal(_sample.code);
+                    done(error, doc);
+                });
+        });
+    });
+
     it('should be able generate sequence value on model(s) creation', function(done) {
 
         Sample.create(samples.slice(0, 3), function(error, _samples) {
